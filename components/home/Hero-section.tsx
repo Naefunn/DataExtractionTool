@@ -8,14 +8,13 @@ export default function HeroSection() {
     <section className="relative mx-auto flex flex-col z-0 items-center justify-center py-16 lg:pb-20 transition-all animate-in lg:px-12 max-w-7xl">
       <div className="flex">
         <div
-          className="relative px-[2px] 
-          rounded-full 
-          bg-gradient-to-r from-rose-200 via-rose-500 to-rose-800
-          animate-gradient-x group"
+          className="relative p-[1px]
+          rounded-full overflow-hidden
+          bg-linear-to-r from-rose-200 via-rose-500 to-rose-800 group animate-gradient-x"
         >
           <Badge
             variant="secondary"
-            className="relative px-6 py-2 text-base font-medium bg-white rounded-full group-hover:bg-pink-50 transition-colors duration-200"
+            className="relative px-6 py-2 text-base font-medium rounded-full group-hover:bg-gray-50 transition-colors duration-200"
           >
             <Sparkle className="h-6 w-6 mr-2 text-rose-600 animate-pulse" />
             <p className="text-base text-rose-600">Powered by AI</p>
