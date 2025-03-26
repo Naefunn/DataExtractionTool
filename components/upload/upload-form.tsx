@@ -1,8 +1,9 @@
 "use client";
 
-import { log } from "console";
-import UploadFormInput from "./upload-form-input";
+import { useUploadThing } from "@/utils/uploadthing";
 import { z } from "zod";
+import UploadFormInput from "./upload-form-input";
+import { toast } from "sonner";
 
 const schema = z.object({
   file: z
@@ -18,7 +19,22 @@ const schema = z.object({
 });
 
 export default function UploadForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { startUpload, routeConfig } = useUploadThing("pdfUploader", {
+    onClientUploadComplete: () => {
+      console.log("Uploaded Successfully");
+    },
+    onUploadError: (err) => {
+      console.error("error occured while uploading", err);
+      toast("Error occured whilst uploading", {
+        description: err.message,
+      });
+    },
+    onUploadBegin: ({ file }) => {
+      console.log("upload has begun for", file);
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submitted");
     const formData = new FormData(e.currentTarget);
@@ -30,9 +46,20 @@ export default function UploadForm() {
     console.log(validatedFields);
 
     if (!validatedFields.success) {
-      console.log(
-        validatedFields.error.flatten().fieldErrors.file?.[0] ?? "Invalid file"
-      );
+      toast("Something went wrong", {
+        description:
+          validatedFields.error.flatten().fieldErrors.file?.[0] ??
+          "Invalid file",
+      });
+      return;
+    }
+
+    toast("Processing PDF", {
+      description: "Our AI is processing your document!",
+    });
+
+    const resp = await startUpload([file]);
+    if (!resp) {
       return;
     }
   };
