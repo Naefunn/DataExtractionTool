@@ -4,7 +4,10 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { z } from "zod";
 import UploadFormInput from "./upload-form-input";
 import { toast } from "sonner";
-import { generatePdfSummary } from "@/actions/upload-actions";
+import {
+  generatePdfSummary,
+  storePdfSummaryAction,
+} from "@/actions/upload-actions";
 import { useRef, useState } from "react";
 
 const schema = z.object({
@@ -43,7 +46,6 @@ export default function UploadForm() {
 
     try {
       setIsLoading(true);
-      console.log("submitted");
       const formData = new FormData(e.currentTarget);
       const file = formData.get("file") as File;
 
@@ -63,6 +65,8 @@ export default function UploadForm() {
       }
 
       const resp = await startUpload([file]);
+      console.log("upload response", resp);
+
       if (!resp) {
         toast("Something went wrong", {
           description: "Please use a different file",
@@ -80,14 +84,23 @@ export default function UploadForm() {
 
       const { data = null, message = null } = summary || {};
       if (data) {
+        let storeResult: any;
         toast("Saving PDF..", {
           description: "Not long now! We are saving your summary",
         });
         formRef.current?.reset();
         setIsLoading(false);
-        // if (data.summary) {
-        //   // save the summary to db
-        // }
+        if (data.summary) {
+          storeResult = await storePdfSummaryAction({
+            summary: data.summary,
+            fileUrl: resp[0].serverData.file.url,
+            title: data.title,
+            fileName: file.name,
+          });
+        }
+        toast("Summary generated and saved!", {
+          description: "Your summary is now saved!",
+        });
       } else {
         toast("Unknown error occured", {
           description: message || "Unknown error occured",
