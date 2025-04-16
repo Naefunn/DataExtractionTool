@@ -4,15 +4,17 @@ import { generateSummaryFromGemini } from "@/lib/geminiai";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAi } from "@/lib/openai";
 
-export async function generatePdfSummary(uploadResponse: {
-  serverData: {
-    userId: string;
-    file: {
-      url: string;
-      name: string;
+export async function generatePdfSummary(
+  uploadResponse: {
+    serverData: {
+      userId: string;
+      file: {
+        url: string;
+        name: string;
+      };
     };
-  };
-}) {
+  }[]
+) {
   if (!uploadResponse) {
     return {
       success: false,
@@ -42,7 +44,7 @@ export async function generatePdfSummary(uploadResponse: {
 
     let summary;
     try {
-      summary = await generateSummaryFromGemini(pdfText);
+      summary = await generateSummaryFromOpenAi(pdfText);
       console.log(summary);
     } catch (error) {
       console.log(error);
