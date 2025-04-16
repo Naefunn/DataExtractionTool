@@ -8,7 +8,7 @@ const client = new OpenAI({
 export async function generateSummaryFromOpenAi(pdfText: string) {
   try {
     const completion = await client.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4.1",
       messages: [
         {
           role: "system",
@@ -25,7 +25,7 @@ export async function generateSummaryFromOpenAi(pdfText: string) {
     return completion.choices[0].message.content;
   } catch (error: any) {
     if (error.status === 429) {
-      throw new Error("Rate limit exeeded");
+      throw new Error("RATE_LIMIT_EXCEEDED");
     }
     throw error;
   }

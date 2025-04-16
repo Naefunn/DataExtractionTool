@@ -1,5 +1,6 @@
 "use server";
 
+import { generateSummaryFromGemini } from "@/lib/geminiai";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAi } from "@/lib/openai";
 
@@ -41,11 +42,24 @@ export async function generatePdfSummary(uploadResponse: {
 
     let summary;
     try {
-      summary = await generateSummaryFromOpenAi(pdfText);
+      summary = await generateSummaryFromGemini(pdfText);
       console.log(summary);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
       // call gemini
+      if (error instanceof Error && error.message === "RATE_LIMIT_EXCEEDED") {
+        try {
+          summary = await generateSummaryFromGemini(pdfText);
+        } catch (geminiError) {
+          console.error(
+            " Gemini API failed after OpenAI quota exceeded",
+            geminiError
+          );
+          throw new Error(
+            "Failed to generate summary with available AI providers"
+          );
+        }
+      }
     }
 
     if (!summary) {
@@ -55,6 +69,14 @@ export async function generatePdfSummary(uploadResponse: {
         data: null,
       };
     }
+
+    return {
+      success: true,
+      message: "Summary generated successfully",
+      data: {
+        summary,
+      },
+    };
   } catch (err) {
     return {
       success: false,
