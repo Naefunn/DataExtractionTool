@@ -95,7 +95,7 @@ const PricingCard = ({
 
 export default function PricingSection() {
   return (
-    <section className="relative overflow-hidden" id="6">
+    <section className="relative overflow-hidden" id="pricing">
       <div
         className="py-12 lg:py-24 max-w-5xl mx-auto px-4 sm:px-4
         lg:px-8 lg:pt-12"
