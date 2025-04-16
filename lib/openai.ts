@@ -1,4 +1,6 @@
 import OpenAI from "openai";
+import { SUMMARY_SYSTEM_PROMPT } from "@/utils/prompts";
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -14,7 +16,7 @@ export async function generateSummaryFromOpenAi(pdfText: string) {
         },
         {
           role: "user",
-          content: "",
+          content: `Transform this document into an engaging, easy-to-read summary with contextually relevant emojis and proper markdown formatting: \n\n ${pdfText}`,
         },
       ],
       temperature: 0.7,
